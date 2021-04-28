@@ -1,0 +1,1 @@
+/home/pseudocodenerd/.config/nvim/init.vim
