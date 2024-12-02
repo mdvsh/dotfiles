@@ -1,0 +1,353 @@
+" ========== Basic Settings ==========
+set nocompatible
+syntax on
+filetype plugin indent on
+set encoding=utf-8
+set number relativenumber
+set cursorline
+set showmatch
+set hidden
+set nowrap
+set cmdheight=2
+set updatetime=300
+set signcolumn=yes
+set expandtab
+set smarttab
+set shiftwidth=4
+set tabstop=4
+set autoindent
+set smartindent
+set incsearch
+set ignorecase
+set smartcase
+set scrolloff=8
+set sidescrolloff=8
+set noswapfile
+set nobackup
+set undofile
+set undodir=~/.vim/undodir
+set clipboard=unnamed,unnamedplus
+set lazyredraw
+set ttyfast
+
+" Mouse support
+set mouse=a
+set mousemodel=popup
+set ttymouse=sgr
+set whichwrap+=<,>,[,]
+
+" ========== Plugin Manager ==========
+" Install vim-plug if not found
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+endif
+
+" Run PlugInstall if there are missing plugins
+autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \| PlugInstall --sync | source $MYVIMRC
+\| endif
+
+call plug#begin('~/.vim/plugged')
+" Essential plugins
+Plug 'morhetz/gruvbox'                " Colorscheme
+Plug 'tpope/vim-commentary'           " Quick commenting
+Plug 'tpope/vim-surround'            " Surround text objects
+Plug 'jiangmiao/auto-pairs'          " Auto pair brackets
+Plug 'junegunn/fzf'                  " Fuzzy finder
+Plug 'junegunn/fzf.vim'              " Fuzzy finder vim integration
+Plug 'dense-analysis/ale'            " Async linting
+Plug 'ludovicchabant/vim-gutentags'  " Tag management
+Plug 'prabirshrestha/vim-lsp'        " LSP support
+Plug 'prabirshrestha/asyncomplete.vim' " Async completion
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'prabirshrestha/asyncomplete-buffer.vim'
+Plug 'prabirshrestha/asyncomplete-file.vim'
+
+" Language specific
+Plug 'fatih/vim-go'                  " Go support
+Plug 'vim-python/python-syntax'       " Better Python syntax
+Plug 'octol/vim-cpp-enhanced-highlight' " Better C++ syntax
+Plug 'rust-lang/rust.vim'            " Rust support
+Plug 'lervag/vimtex'                 " Essential LaTeX plugin
+Plug 'KeitaNakamura/tex-conceal.vim' " Better math symbol concealment
+
+call plug#end()
+
+" ========== LSP Configuration ==========
+" Enable LSP debugging
+let g:lsp_log_verbose = 1
+let g:lsp_log_file = expand('~/vim-lsp.log')
+
+" LSP configuration
+let g:lsp_diagnostics_enabled = 1
+let g:lsp_signs_enabled = 1
+let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_highlights_enabled = 1
+let g:lsp_textprop_enabled = 1
+let g:lsp_highlight_references_enabled = 1
+let g:lsp_async_completion = 1
+let g:lsp_work_done_progress_enabled = 1
+
+" Register LSP servers
+if executable('pyls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'pyls',
+        \ 'cmd': {server_info->['pyls']},
+        \ 'allowlist': ['python'],
+        \ })
+endif
+
+if executable('clangd')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'clangd',
+        \ 'cmd': {server_info->['clangd']},
+        \ 'allowlist': ['c', 'cpp'],
+        \ })
+endif
+
+if executable('gopls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'gopls',
+        \ 'cmd': {server_info->['gopls']},
+        \ 'allowlist': ['go'],
+        \ })
+endif
+
+" Asyncomplete configuration
+let g:asyncomplete_auto_popup = 1
+let g:asyncomplete_auto_completeopt = 0
+set completeopt=menuone,noinsert,noselect,preview
+
+" Register completion sources
+au User asyncomplete_setup call asyncomplete#register_source({
+    \ 'name': 'buffer',
+    \ 'allowlist': ['*'],
+    \ 'completor': function('asyncomplete#sources#buffer#completor'),
+    \ })
+
+au User asyncomplete_setup call asyncomplete#register_source({
+    \ 'name': 'file',
+    \ 'allowlist': ['*'],
+    \ 'priority': 10,
+    \ 'completor': function('asyncomplete#sources#file#completor')
+    \ })
+
+" ========== Color Scheme ==========
+set background=dark
+let g:gruvbox_contrast_dark='medium'
+let g:gruvbox_sign_column='bg0'
+colorscheme gruvbox
+
+" ========== Key Mappings ==========
+let mapleader = " "  " Space as leader key
+
+" Essential mappings
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+
+" Window navigation
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Quick split creation
+nnoremap <leader>v :vsplit<CR>
+nnoremap <leader>h :split<CR>
+
+" Adjust split sizes
+nnoremap <M-j> :resize -2<CR>
+nnoremap <M-k> :resize +2<CR>
+nnoremap <M-h> :vertical resize -2<CR>
+nnoremap <M-l> :vertical resize +2<CR>
+
+" Buffer navigation
+nnoremap <leader>n :bn<CR>
+nnoremap <leader>p :bp<CR>
+nnoremap <leader>d :bd<CR>
+
+" FZF mappings
+nnoremap <leader>f :Files<CR>
+nnoremap <leader>b :Buffers<CR>
+nnoremap <leader>s :Rg<CR>
+nnoremap <leader>t :Tags<CR>
+
+" LSP mappings
+nnoremap <silent> gd :LspDefinition<CR>
+nnoremap <silent> gr :LspReferences<CR>
+nnoremap <silent> gi :LspImplementation<CR>
+nnoremap <silent> K :LspHover<CR>
+nnoremap <silent> <leader>rn :LspRename<CR>
+nnoremap <silent> <leader>ld :LspDocumentDiagnostics<CR>
+nnoremap <silent> [g :LspPreviousError<CR>
+nnoremap <silent> ]g :LspNextError<CR>
+
+" Quick error navigation
+nnoremap ]e :ALENext<CR>
+nnoremap [e :ALEPrevious<CR>
+nnoremap ]q :cnext<CR>
+nnoremap [q :cprev<CR>
+
+" Terminal
+nnoremap <leader>tt :terminal<CR>
+
+" Quick make
+nnoremap <leader>m :make<CR>
+
+" Quick note
+nnoremap <leader>nn :e ~/notes/quick-note-<C-R>=strftime("%Y%m%d")<CR>.md<CR>
+
+" Quick compile and run for C/C++(17)
+nnoremap <leader>cc :!gcc % -o %:r && ./%:r<CR>
+nnoremap <leader>cp :!g++ -std=c++17 % -o %:r && ./%:r<CR>
+
+" Toggle mouse support
+nnoremap <leader>tm :call ToggleMouse()<CR>
+function! ToggleMouse()
+    if &mouse == 'a'
+        set mouse=
+        echo "Mouse disabled"
+    else
+        set mouse=a
+        echo "Mouse enabled"
+    endif
+endfunction
+
+" Completion mappings
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+
+" ========== Language Settings ==========
+" C/C++
+let g:ale_linters = {
+    \ 'c': ['clangd'],
+    \ 'cpp': ['clangd'],
+    \ 'python': ['pylint', 'pyls'],
+    \ 'go': ['gopls'],
+    \ }
+
+let g:ale_fixers = {
+    \ 'c': ['clang-format'],
+    \ 'cpp': ['clang-format'],
+    \ 'python': ['black'],
+    \ 'go': ['gofmt', 'goimports'],
+    \ }
+
+" Go settings
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_types = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
+
+" Python settings
+let g:python_highlight_all = 1
+
+" Gutentags settings
+let g:gutentags_ctags_executable = '/opt/homebrew/bin/ctags'
+
+" ========== Auto Commands ==========
+" Trim trailing whitespace on save
+autocmd BufWritePre * :%s/\s\+$//e
+
+" Set specific file types
+autocmd BufNewFile,BufRead *.h set filetype=c
+autocmd BufNewFile,BufRead *.hpp set filetype=cpp
+autocmd BufNewFile,BufRead *.cc set filetype=cpp
+
+" Terminal settings
+autocmd TerminalOpen * setlocal nonumber norelativenumber
+
+" ========== Status Line ==========
+set laststatus=2
+set statusline=
+set statusline+=%#PmenuSel#
+set statusline+=\ %{mode()}\
+set statusline+=%#LineNr#
+set statusline+=\ %f
+set statusline+=%m
+set statusline+=%=
+set statusline+=%#CursorColumn#
+set statusline+=\ %y
+set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
+set statusline+=\[%{&fileformat}\]
+set statusline+=\ %p%%
+set statusline+=\ %l:%c
+
+" ========== LaTeX Setup ==========
+" Add to your plugin section:
+" VimTeX configuration
+let g:tex_flavor = 'latex'           " Recognize .tex files as latex
+let g:vimtex_view_method = 'skim'    " Use Skim as viewer
+let g:vimtex_view_skim_sync = 1      " Enable forward search
+let g:vimtex_view_skim_activate = 1   " Focus Skim after command
+
+" Compilation settings
+let g:vimtex_compiler_method = 'latexmk'
+let g:vimtex_compiler_latexmk = {
+    \ 'build_dir' : '',
+    \ 'callback' : 1,
+    \ 'continuous' : 1,
+    \ 'executable' : 'latexmk',
+    \ 'hooks' : [],
+    \ 'options' : [
+    \   '-verbose',
+    \   '-file-line-error',
+    \   '-synctex=1',
+    \   '-interaction=nonstopmode',
+    \ ],
+    \}
+
+" Minimal concealment settings
+set conceallevel=2
+let g:tex_conceal='abdmg'
+let g:vimtex_syntax_conceal = {
+    \ 'accents': 1,
+    \ 'ligatures': 1,
+    \ 'cites': 1,
+    \ 'fancy': 1,
+    \ 'greek': 1,
+    \ 'math_bounds': 1,
+    \ 'math_delimiters': 1,
+    \ 'math_fracs': 1,
+    \ 'math_super_sub': 1,
+    \ 'math_symbols': 1,
+    \ 'sections': 0,
+    \ 'styles': 0,
+    \}
+
+" Quick math mode mappings
+inoremap <buffer> mk $$<Left>
+inoremap <buffer> dm \[<CR>\]<Esc>O
+
+" Compilation and viewing mappings
+nnoremap <leader>ll :VimtexCompile<CR>
+nnoremap <leader>lv :VimtexView<CR>
+nnoremap <leader>le :VimtexErrors<CR>
+nnoremap <leader>lc :VimtexClean<CR>
+nnoremap <leader>lt :VimtexTocToggle<CR>
+
+" Optional: Basic template insertion
+nnoremap <leader>lt :call InsertLatexTemplate()<CR>
+function! InsertLatexTemplate()
+    let template = [
+        \ '\documentclass[12pt]{article}',
+        \ '\usepackage{amsmath,amsthm,amssymb}',
+        \ '\usepackage{mathtools}',
+        \ '\usepackage{enumerate}',
+        \ '',
+        \ '\title{Assignment X}',
+        \ '\author{Your Name}',
+        \ '\date{\today}',
+        \ '',
+        \ '\begin{document}',
+        \ '\maketitle',
+        \ '',
+        \ '\end{document}'
+        \ ]
+    call append(0, template)
+endfunction
+

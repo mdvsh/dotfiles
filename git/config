@@ -1,0 +1,49 @@
+# ~/.dotfiles/git/config
+[user]
+    name = Madhav Sharma
+    email = madhavss@umich.edu
+
+[core]
+    editor = vim
+    excludesfile = ~/.dotfiles/git/ignore
+    pager = delta
+
+[init]
+    defaultBranch = main
+
+[color]
+    ui = auto
+
+[push]
+    default = current
+    autoSetupRemote = true
+
+[pull]
+    rebase = true
+
+[fetch]
+    prune = true
+
+[diff]
+    colorMoved = default
+
+[merge]
+    conflictstyle = diff3
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    light = false
+    side-by-side = true
+    line-numbers = true
+
+[alias]
+    st = status -sb
+    ci = commit
+    co = checkout
+    br = branch
+    unstage = reset HEAD --
+    last = log -1 HEAD
+    lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
