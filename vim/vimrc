@@ -234,7 +234,8 @@ let g:ale_fixers = {
     \ 'python': ['black'],
     \ 'go': ['gofmt', 'goimports'],
     \ }
-
+let g:ale_cpp_clangformat_options = '-style=file'
+let g:ale_fix_on_save = 1
 " Go settings
 let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1

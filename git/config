@@ -4,9 +4,7 @@
     email = madhavss@umich.edu
 
 [core]
-    editor = vim
     excludesfile = ~/.dotfiles/git/ignore
-    pager = delta
 
 [init]
     defaultBranch = main
